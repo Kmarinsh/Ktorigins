@@ -28,7 +28,7 @@ let lobbyCont  = document.querySelector("#lobby-container"),
 	cooldownLeft = document.querySelector("#game-cooldown"),
     currRound  = document.querySelector("#game-round"),
     mazeCont   = document.querySelector("#game-maze"),
-	score = document.querySelector("#score"),
+	scoreCount = document.querySelector("#score-count"),
 
     // Any relative paths to game assets, including images,
     // sounds, etc.
@@ -163,7 +163,7 @@ function updateRound (round) {
 }
 
 function updateScore (score){
-	score.innerHTML = score;
+  scoreCount.innerHTML = score;
 }
 
 function endGame () {
@@ -358,6 +358,9 @@ class Player extends Ktahbject{
             triggerCooldown = true;
           }
           break;
+		case "yenrof" :
+			this.game.killAll(Zombie);
+			break;
       }
     }
     if (triggerCooldown) { this.cooldown += this.game.cooldown; }
@@ -605,7 +608,8 @@ class Game {
     this.forEachKtahbject((k) => actors.add(k));
     actors.forEach((k) => k.act());
     this.surviveTime--;
-	updateScore(diffMultiplier);
+	this.score += 10;
+	updateScore(this.score);
     updateTimer(this.surviveTime / this.timerMax);
     if (this.surviveTime <= 0) {
       this.nextRound();
@@ -623,7 +627,19 @@ class Game {
     this.nZoms++;
     this.timerMax++;
     this.round++;
+	switch (this.difficulty){
+		case "ktrivial":
+			this.score += 0;
+			break;
+		case "ktolerable":
+			this.score += 2;
+			break;
+		case "kterrible":
+			this.score += 5;
+			break;
+	}
     this.surviveTime = this.timerMax;
+	
     message = "K'tah sleeps... for now...";
     updateRound(this.round);
 
