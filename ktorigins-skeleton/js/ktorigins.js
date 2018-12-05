@@ -386,7 +386,19 @@ class Player extends Ktahbject{
 class Zombie extends Ktahbject {
   constructor (r, c, game) {
 	super(r,c,game);
-    this.asset = "fortzomb";
+    switch(this.game.character){
+		case "architect":
+			this.asset = "zombie";
+			break;
+		case "jonesy" :
+			this.asset = "fortzomb";
+			break;
+		case "yenrof" :
+			this.asset = "zombie";
+			break;
+		case "steve" :
+			this.asset = "creeper";
+	}
   }
   act () {
     if (this.health <= 0) {
@@ -419,7 +431,19 @@ class Zombie extends Ktahbject {
 class Wall extends Ktahbject{
   constructor (r, c, game, permanent = true) {
 	super(r,c,game);
-    this.asset = "fortnitewall";
+	switch(this.game.character){
+		case "architect":
+			this.asset = "wall";
+			break;
+		case "jonesy" :
+			this.asset = "fortnitewall";
+			break;
+		case "yenrof" :
+			this.asset = "wall";
+			break;
+		case "steve" :
+			this.asset = "wall2";
+	}
     this.permanent = permanent;
 	if(!this.permanent){
 		this.health = 5;
