@@ -611,6 +611,7 @@ class Game {
 	this.score += 10;
 	updateScore(this.score);
     updateTimer(this.surviveTime / this.timerMax);
+	updateCooldown(this.player.cooldown/this.cooldown);
     if (this.surviveTime <= 0) {
       this.nextRound();
     }
