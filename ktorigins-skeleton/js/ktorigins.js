@@ -25,14 +25,16 @@ let lobbyCont  = document.querySelector("#lobby-container"),
     // Game Selectors
     timeLeft   = document.querySelector("#game-timer"),
     healthLeft = document.querySelector("#game-health"),
+	cooldownLeft = document.querySelector("#game-cooldown"),
     currRound  = document.querySelector("#game-round"),
     mazeCont   = document.querySelector("#game-maze"),
+	score = document.querySelector("#score"),
 
     // Any relative paths to game assets, including images,
     // sounds, etc.
     assets = {
       images: {
-        architect: "./assets/images/jonesy.png",
+        architect: "./assets/images/architect.png",
         zombie: "./assets/images/zombie.png",
         wall: "./assets/images/wall.png",
 		wall2: "./assets/images/wall2.png",
@@ -136,6 +138,7 @@ function beginGameLoad () {
   mazeCont.innerHTML = "";
   timeLeft.value = 100;
   healthLeft.value = 100;
+  cooldownLeft.value = 0;
 }
 
 function endGameLoad () {
@@ -151,8 +154,16 @@ function updateTimer (percentage) {
   timeLeft.value = Math.floor(percentage * 100);
 }
 
+function updateCooldown (percentage) {
+  cooldownLeft.value = Math.floor(percentage * 100);
+}
+
 function updateRound (round) {
   currRound.innerHTML = round;
+}
+
+function updateScore (score){
+	score.innerHTML = score;
 }
 
 function endGame () {
@@ -459,6 +470,7 @@ class Game {
     this.cols = maze[0].length;
     this.round = 0;
     this.nZoms = 0;
+	this.score = 0;
 
     // Save the amount of damage a player takes from
     // getting eaten, the length of a tick, and the
@@ -593,6 +605,7 @@ class Game {
     this.forEachKtahbject((k) => actors.add(k));
     actors.forEach((k) => k.act());
     this.surviveTime--;
+	updateScore(diffMultiplier);
     updateTimer(this.surviveTime / this.timerMax);
     if (this.surviveTime <= 0) {
       this.nextRound();

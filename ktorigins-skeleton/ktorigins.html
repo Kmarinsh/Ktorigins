@@ -44,6 +44,9 @@
           <p><b>Choose a Character:</b> your character will have a special ability to fend off the hordes.</p>
           <div id="character-grid">
             <input type='radio' name='char-select' value='architect' id="char-architect" checked="checked"/><label for="char-architect"></label> 
+			<input type='radio' name='char-select' value='jonesy' id="char-jonesy" checked="checked"/><label for="char-jonesy"></label> 
+			<input type='radio' name='char-select' value='steve' id="char-steve" checked="checked"/><label for="char-steve"></label> 
+			<input type='radio' name='char-select' value='yenrof' id="char-yenrof" checked="checked"/><label for="char-yenrof"></label>
           </div>
           <br/>
 
@@ -83,7 +86,15 @@
         </div>
 
         <div id="game-maze"></div>
-        
+        <div id = "score-cont">
+			<p>SCORE</p>
+			<p id = "score">0</p>
+		</div>
+		<div id = "cooldown-cont">
+			<p>COOLDOWN</p>
+			<progress id="game-cooldown" max="100" value="100"></progress>
+		</div>
+
       <!-- End game -->
       </div>
       

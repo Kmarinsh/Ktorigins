@@ -111,6 +111,20 @@ input[type=radio]:checked + label {
   background-image: url("../assets/images/architect.png");
   background-size: contain;
 }
+#char-jonesy + label {
+  background-image: url("../assets/images/jonesy.png");
+  background-size: contain;
+}
+
+#char-steve + label {
+  background-image: url("../assets/images/steve.png");
+  background-size: contain;
+}
+
+#char-yenrof + label {
+  background-image: url("../assets/images/yenrof.png");
+  background-size: contain;
+}
 
 #config-launch-holder {
   text-align: center;
