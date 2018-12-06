@@ -792,6 +792,7 @@ function isValidMaze (maze) {
           break;
         case "X":
         case ".":
+		case "B":
           break;
         // [Criteria 6 Check]
         default:
