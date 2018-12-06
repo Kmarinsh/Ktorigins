@@ -43,7 +43,8 @@ let lobbyCont  = document.querySelector("#lobby-container"),
 		fortnitewall:"./assets/images/fortnitewall.png",
 		jonesy: "./assets/images/jonesy.png",
 		yenrof: "./assets/images/yenrof.png",
-		fortzomb: "./assets/images/fortnitezombie.png"
+		fortzomb: "./assets/images/fortnitezombie.png",
+		campfire: "./assets/images/campfire.png"
       }
     },
 
@@ -361,6 +362,14 @@ class Player extends Ktahbject{
 		case "yenrof" :
 			this.game.killAll(Zombie);
 			break;
+		case "jonesy" :
+			 let campLoc = {r: this.r + this.facing.r, c: this.c + this.facing.c},
+                 ktobjsAtLoc = this.game.getKtahbjectsAt(campLoc.r, campLoc.c);
+             if (ktobjsAtLoc.length === 0){
+				let newCamp = new Campfire(campLoc.r,campLoc.c,this.game,false);
+				this.game.addAt(newCamp,campLoc.r,campLoc.c);
+				triggerCooldown = true;
+          }
       }
     }
     if (triggerCooldown) { this.cooldown += this.game.cooldown; }
@@ -466,6 +475,27 @@ class Wall extends Ktahbject{
 // of our setup and gameplay
 // ---------------------------------------------------
 
+// ---------------------------------------------------
+// CAMPFIRE Class
+// jonesy's ability
+// ---------------------------------------------------
+
+class Campfire extends Wall{
+	constructor (r, c, game){
+		super(r,c,game,false);
+		this.asset = "campfire";
+	}
+	
+	act(){
+	  super.act();
+	  let playerRow = this.game.player.r,
+		  playerCol = this.game.player.c;
+	  if(activeP5.dist(playerRow,playerCol,this.r,this.c) < 1.1 && this.game.player.health < 90){
+		 this.game.player.health += 5;
+		 updateHealth(this.game.player.health/100);
+	}
+	}
+}
 class Game {
 
   /*
