@@ -44,7 +44,10 @@ let lobbyCont  = document.querySelector("#lobby-container"),
 		jonesy: "./assets/images/jonesy.png",
 		yenrof: "./assets/images/yenrof.png",
 		fortzomb: "./assets/images/fortnitezombie.png",
-		campfire: "./assets/images/campfire.png"
+		campfire: "./assets/images/campfire.png",
+		boulder: "./assets/images/stone.png",
+		mcboulder: "./assets/images/mcstone.png",
+		fortboulder: "./assets/images/fortnitestone.png"
       }
     },
 
@@ -62,7 +65,7 @@ let lobbyCont  = document.querySelector("#lobby-container"),
       "X...X...X...X",
       "X.....P.....X",
       "X...X...X...X",
-      "X...........X",
+      "X.....B.....X",
       "XZ....X....ZX",
       "XXXXXXXXXXXXX" 
 	/*"XXXX",
@@ -369,6 +372,14 @@ class Player extends Ktahbject{
 				let newCamp = new Campfire(campLoc.r,campLoc.c,this.game,false);
 				this.game.addAt(newCamp,campLoc.r,campLoc.c);
 				triggerCooldown = true;
+			 }
+			break;
+		case "steve" :
+			let swordLoc = {r: this.r + this.facing.r, c: this.c + this.facing.c};
+            let objsAtLoc2 = this.game.getKtahbjectsAt(swordLoc.r, swordLoc.c);
+             if (objsAtLoc2.length > 0){
+				objsAtLoc2[0].health -= 101;
+				triggerCooldown = true;
           }
       }
     }
@@ -411,7 +422,7 @@ class Zombie extends Ktahbject {
   }
   act () {
     if (this.health <= 0) {
-	  this.game.eraseAT(this,this.r,this.c)
+	  this.game.eraseAt(this,this.r,this.c)
     }
 
     let r = this.r,
@@ -469,11 +480,42 @@ class Wall extends Ktahbject{
 }
 
 
+
+
 // ---------------------------------------------------
-// GAME CLASS CONFIGURATION
-// We'll use the following Game class to configure all
-// of our setup and gameplay
+// BOULDER CLASS 
+// its a boulder of doom pretty self explanitory
 // ---------------------------------------------------
+
+class Boulder extends Wall{
+	constructor(r,c,game){
+		super(r,c,game,true);
+		switch(this.game.character){
+			case "architect":
+				this.asset = "boulder";
+				break;
+			case "jonesy" :
+				this.asset = "fortboulder";
+				break;
+			case "yenrof" :
+				this.asset = "boulder";
+				break;
+			case "steve" :
+				this.asset = "mcboulder";
+		}
+	}
+	act(){
+		super.act();
+		let r = this.r,
+        c = this.c,
+        dirs = [{r:0, c:1}, {r:0, c:-1}, {r:1, c:0}, {r:-1, c:0}],
+        chosenDir = dirs[Math.floor(Math.random()*4)],
+        toMoveTo = {r: r + chosenDir.r, c: c + chosenDir.c};
+		this.moveTo(toMoveTo.r,toMoveTo.c);
+	}
+	
+}
+
 
 // ---------------------------------------------------
 // CAMPFIRE Class
@@ -496,6 +538,12 @@ class Campfire extends Wall{
 	}
 	}
 }
+
+// ---------------------------------------------------
+// GAME CLASS CONFIGURATION
+// We'll use the following Game class to configure all
+// of our setup and gameplay
+// ---------------------------------------------------
 class Game {
 
   /*
@@ -581,6 +629,9 @@ class Game {
 			this.wall = new Wall(r,c,this);
 			this.addAt(this.wall,r,c);
             break;
+		  case "B":
+			this.boulder = new Boulder(r,c,this);
+			this.addAt(this.boulder,r,c);
         }
       }
     }
