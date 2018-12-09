@@ -47,7 +47,12 @@ let lobbyCont  = document.querySelector("#lobby-container"),
 		campfire: "./assets/images/campfire.png",
 		boulder: "./assets/images/stone.png",
 		mcboulder: "./assets/images/mcstone.png",
-		fortboulder: "./assets/images/fortnitestone.png"
+		fortboulder: "./assets/images/fortnitestone.png",
+		swordup: "./assets/images/swordup.png",
+		sworddown: "./assets/images/sworddown.png",
+		swordleft: "./assets/images/swordleft.png",
+		swordright: "./assets/images/swordright.png",
+		lava: "./assets/images/lava.png"
       }
     },
 
@@ -126,7 +131,6 @@ function setupP5 (p) {
       p.image(assets.p5Images[k.asset], c*cellDims, r*cellDims, cellDims, cellDims);
     });
   }
-
 }
 
 
@@ -281,7 +285,7 @@ class Ktahbject {
     // the target is an empty location; if it is, then
     // we can move to the requested spot; if it isn't, then
     // do nothing!
-    if ( target.length === 0) {
+    if ( target.length === 0 || target[0] instanceof Lava) {
          this.game.addAt(this, row, col);
          this.game.eraseAt(this, this.r, this.c);
          this.r = row;
@@ -319,17 +323,8 @@ class Player extends Ktahbject{
    * the updateHealth function.
    */
   getEaten () {
-    // TODO reduce this player's health property by the amount
-    // decided in the game instance's playerDamage property
-    // ???
 	this.health -= this.game.playerDamage;
-    // TODO update the health bar with the percentage of the player's
-    // remaining health, out of a maximum 100
-    // [!] updateHealth(percentage)
-    // ???
 	updateHealth(this.health/100);
-    // TODO if the player's health is <= 0, then have the game end
-    // in defeat
     if (this.health <= 0) {
        this.game.end();
      }
@@ -347,18 +342,9 @@ class Player extends Ktahbject{
         case "architect":
           let wallLoc = {r: this.r + this.facing.r, c: this.c + this.facing.c},
               objsAtLoc = this.game.getKtahbjectsAt(wallLoc.r, wallLoc.c);
-
-          // TODO if there's nothing in objsAtLoc, then it's clear and
-          // ready to have a wall placed in it!
           if (objsAtLoc.length === 0){
-            // TODO create a new Wall object at the given wallLoc
-            // let newWall = new Wall( ??? );
 			let newWall = new Wall(wallLoc.r,wallLoc.c,this.game,false);
-            // TODO add the newWall to the game's ktahbjects:
-            // [!] this.game.ktahbjects
-            // ???
 			this.game.addAt(newWall,wallLoc.r,wallLoc.c);
-            // Uncomment, then leave this line as-is:
             triggerCooldown = true;
           }
           break;
@@ -374,13 +360,14 @@ class Player extends Ktahbject{
 				triggerCooldown = true;
 			 }
 			break;
+// No Cooldown on purpose for steve because the skill can hurt you too
 		case "steve" :
-			let swordLoc = {r: this.r + this.facing.r, c: this.c + this.facing.c};
-            let objsAtLoc2 = this.game.getKtahbjectsAt(swordLoc.r, swordLoc.c);
-             if (objsAtLoc2.length > 0){
-				objsAtLoc2[0].health -= 101;
-				triggerCooldown = true;
-          }
+			 let lavaLoc = {r: this.r + this.facing.r, c: this.c + this.facing.c},
+                 ktobjsAtLoc2 = this.game.getKtahbjectsAt(lavaLoc.r, lavaLoc.c);
+             if (ktobjsAtLoc2.length === 0){
+				let newLava = new Lava(lavaLoc.r,lavaLoc.c,this.game,false);
+				this.game.addAt(newLava,lavaLoc.r,lavaLoc.c);
+			 }
       }
     }
     if (triggerCooldown) { this.cooldown += this.game.cooldown; }
@@ -394,6 +381,50 @@ class Player extends Ktahbject{
 	if(this.cooldown > 0){
 		this.cooldown--;
 	}
+	if (this.health <= 0) {
+       this.game.end();
+    }
+  }
+}
+
+
+
+
+
+// ---------------------------------------------------
+// WALL CLASS
+// Used to model the game's boundaries and impassable
+// barriers... can also be used for Architect's walls!
+// ---------------------------------------------------
+class Wall extends Ktahbject{
+  constructor (r, c, game, permanent = true) {
+	super(r,c,game);
+	switch(this.game.character){
+		case "architect":
+			this.asset = "wall";
+			break;
+		case "jonesy" :
+			this.asset = "fortnitewall";
+			break;
+		case "yenrof" :
+			this.asset = "wall";
+			break;
+		case "steve" :
+			this.asset = "wall2";
+	}
+    this.permanent = permanent;
+	if(!this.permanent){
+		this.health = 5;
+	}
+	else{this.health = 500;}
+  }
+  act () {
+	if(!this.permanent){
+		this.health--;
+	}
+    if ( this.health <=0 ) {
+      this.game.eraseAt(this,this.r,this.c);
+    }
   }
 }
 
@@ -444,45 +475,6 @@ class Zombie extends Ktahbject {
 
 
 // ---------------------------------------------------
-// WALL CLASS
-// Used to model the game's boundaries and impassable
-// barriers... can also be used for Architect's walls!
-// ---------------------------------------------------
-class Wall extends Ktahbject{
-  constructor (r, c, game, permanent = true) {
-	super(r,c,game);
-	switch(this.game.character){
-		case "architect":
-			this.asset = "wall";
-			break;
-		case "jonesy" :
-			this.asset = "fortnitewall";
-			break;
-		case "yenrof" :
-			this.asset = "wall";
-			break;
-		case "steve" :
-			this.asset = "wall2";
-	}
-    this.permanent = permanent;
-	if(!this.permanent){
-		this.health = 5;
-	}
-  }
-  act () {
-	if(!this.permanent){
-		this.health--;
-	}
-    if ( this.health <=0 ) {
-      this.game.eraseAt(this,this.r,this.c);
-    }
-  }
-}
-
-
-
-
-// ---------------------------------------------------
 // BOULDER CLASS 
 // its a boulder of doom pretty self explanitory
 // ---------------------------------------------------
@@ -516,7 +508,27 @@ class Boulder extends Wall{
 	
 }
 
+// ---------------------------------------------------
+// Lava class
+// ---------------------------------------------------
 
+class Lava extends Wall{
+	constructor(r,c,game){
+		super(r,c,game,false);
+		this.asset = "lava";
+		this.health = 10;
+	}
+	act(){
+		super.act();
+		let locArr = this.game.getKtahbjectsAt(this.r,this.c);
+		if(locArr.length >1){
+			locArr[1].health -= 100;
+		}
+		updateHealth(this.game.player.health/100);
+	}
+		
+		
+}
 // ---------------------------------------------------
 // CAMPFIRE Class
 // jonesy's ability
@@ -855,3 +867,4 @@ function isValidMaze (maze) {
   // [Criteria 4, 5 Check]
   return zombieCount >= 1 && playerCount === 1;
 }
+
